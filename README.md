@@ -34,7 +34,7 @@ webpack-demo
    cd /foo/bar //此时当前路径为 /foo/bar
    cd ./baz //此时路径为 /foo/bar/baz
   ```
-#### 初始化配置的一些问题
+#### <font color=#FF0000>初始化配置的一些问题</font>
 1. 引入内部js文件放在index.html的body中,放在head中的是外部js文件.内部js文件如果放在head中当加载到的时候会直接执行,
 这时document还没加载完会报错.
 2. 
@@ -84,16 +84,18 @@ plugins:[
 ### 三、loader及常用的一些loader
 >webpack本身只能对js和json文件进行处理,为了对css,静态资源等文件进行处理,需要使用loader
 对非js文件进行预处理.loader与plugins有些相似,但是loader只专注于对文件的transform,plugin的则不止于此.
-
 - babel-loader 将 ES2015+ 代码转译为 ES5.
 - ts-loader 将 TypeScript 代码转译为 ES5.
 - css-loader 解析 @import 和 url()，并对引用的依赖进行解析.
-- style-loader 在 HTML 中注入 <style> 标签将 css 添加到 DOM 中。通常与 css-loader 结合使用.
+- style-loader 在 HTML 中注入style标签将 css 添加到 DOM 中。通常与 css-loader 结合使用.
 - sass-loader 加载 sass/scss 文件并编译成 css.
 - postcss-loader 使用 PostCSS 加载和转译 css 文件.
 - html-loader 将 HTML 导出为字符串.
 - vue-loader 加载和转译 Vue 组件.
 - url-loader 和 file-loader 一样，但如果文件小于配置的限制值，可以返回 data URL.
-- file-loader 将文件提取到输出目录，并返回相对路径.
-
-
+- file-loader 将文件提取到输出目录，并返回相对路径
+#### 1.style-loader/css-loader
+```
+//安装
+npm i style-loader css-loader -D
+```
