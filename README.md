@@ -34,7 +34,7 @@ webpack-demo
    cd /foo/bar //此时当前路径为 /foo/bar
    cd ./baz //此时路径为 /foo/bar/baz
   ```
-#### <font color=#FF0000>初始化配置的一些问题</font>
+#### 初始化配置的一些问题
 1. 引入内部js文件放在index.html的body中,放在head中的是外部js文件.内部js文件如果放在head中当加载到的时候会直接执行,
 这时document还没加载完会报错.
 2. 
@@ -87,7 +87,7 @@ plugins:[
 - babel-loader 将 ES2015+ 代码转译为 ES5.
 - ts-loader 将 TypeScript 代码转译为 ES5.
 - css-loader 解析 @import 和 url()，并对引用的依赖进行解析.
-- style-loader 在 HTML 中注入style标签将 css 添加到 DOM 中。通常与 css-loader 结合使用.
+- style-loader 在 HTML 中注入\<style>标签将 css 添加到 DOM 中。通常与 css-loader 结合使用.
 - sass-loader 加载 sass/scss 文件并编译成 css.
 - postcss-loader 使用 PostCSS 加载和转译 css 文件.
 - html-loader 将 HTML 导出为字符串.
@@ -95,7 +95,30 @@ plugins:[
 - url-loader 和 file-loader 一样，但如果文件小于配置的限制值，可以返回 data URL.
 - file-loader 将文件提取到输出目录，并返回相对路径
 #### 1.style-loader/css-loader
+>介绍:css-loader将css代码抽出import或require的模块代码交给下一个loader,这里即style-loader处理.
+style-loader则将css代码直接使用\<style>标签插入入口文件的head中
 ```
 //安装
 npm i style-loader css-loader -D
+```
+##### 使用:
+1.在webpack.config.js中新增module对象,表示要对模块进行配置处理
+2.在module中配置处理规则rules,规则中包含不同类来处理不同的模块
+3.一类模块配置多个loader时是从右往左
+4.include和exclude,一个是包含一个是不包含且exclude的优先级最高
+```
+module: {
+        rules: [
+            {
+                test: /\.css/,   //test匹配:匹配所有含有.css的文件
+                use:["style-loader","css-loader"] //使用这两个loader进行处理,从右到左
+                include:[        //和test相同,但使用绝对路径直接进行匹配
+                    path.resolve(__dirname, "app")
+                ],
+                exclude:[       //表示绝对不匹配的选项
+                    path.resolve(__dirname, "app/demo")
+                ]
+            }
+        ]
+    }
 ```
