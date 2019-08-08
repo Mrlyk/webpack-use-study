@@ -1,9 +1,7 @@
 function createEL(){
     let element = document.createElement('div')
-    element.innerHTML = 'Hello Webpack4'
+    element.innerHTML = 'Hello Web'
     return element
 }
 
 document.body.appendChild(createEL())
-
-

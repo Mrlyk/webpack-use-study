@@ -41,6 +41,15 @@ webpack-demo
 
 ___
 ### 二、常用插件plugins
+>插件用于扩展webpack自身的功能,使用插件让我们能够干预webpack的构建过程,达到自定义的目的
+- HtmlWebpackPlugin 自动生成入口文件(html入口文件)，并将最新的资源注入到 HTML 中.
+- CommonsChunkPlugin 用以创建独立文件，常用来提取多个模块中的公共模块
+- DefinePlugin 用以定义在编译时使用的全局常量.
+- DllPlugin 拆分 bundle 减少不必要的构建.
+- ExtractTextWebpackPlugin 将文本从 bundle 中提取到单独的文件中。常见的场景是从 bundle 中将 CSS 提取到独立的 css 文件中.
+- HotModuleReplacementPlugin 在运行过程中替换、添加或删除模块，而无需重新加载整个页面.
+- UglifyjsWebpackPlugin 对 js 进行压缩，减小文件的体积.
+- CopyWebpackPlugin 将单个文件或整个目录复制到构建目录.一个常用的场景是将项目中的静态图片不经构建直接复制到构建后的目录.
 #### 1.HtmlWebpackPlugin
 >介绍:上面每次我们更改输出文件的名字, 也要手动去修改index.html中引入js的名字,很不方便.
 本插件可以帮助我们自动生成入口文件(生成入口index.html,所以原来手动创建的可以删除),自动将生成的的资源注入到index.html中
@@ -71,3 +80,20 @@ plugins:[
     })
     ]
 ```
+---
+### 三、loader及常用的一些loader
+>webpack本身只能对js和json文件进行处理,为了对css,静态资源等文件进行处理,需要使用loader
+对非js文件进行预处理.loader与plugins有些相似,但是loader只专注于对文件的transform,plugin的则不止于此.
+
+- babel-loader 将 ES2015+ 代码转译为 ES5.
+- ts-loader 将 TypeScript 代码转译为 ES5.
+- css-loader 解析 @import 和 url()，并对引用的依赖进行解析.
+- style-loader 在 HTML 中注入 <style> 标签将 css 添加到 DOM 中。通常与 css-loader 结合使用.
+- sass-loader 加载 sass/scss 文件并编译成 css.
+- postcss-loader 使用 PostCSS 加载和转译 css 文件.
+- html-loader 将 HTML 导出为字符串.
+- vue-loader 加载和转译 Vue 组件.
+- url-loader 和 file-loader 一样，但如果文件小于配置的限制值，可以返回 data URL.
+- file-loader 将文件提取到输出目录，并返回相对路径.
+
+
