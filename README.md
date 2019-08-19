@@ -126,6 +126,34 @@ module: {
         ]
     }
 ```
+
+#### 2.url-loader/file-loader
+>介绍:将文件提取到输出目录，并返回相对路径,用url-loader可以配置尺寸限制,小于该尺寸会被转换成base64编码的url,大于该尺寸的则交给file-loader处理.
+```
+//安装(以url-loader为例)
+npm i url-loader -D
+```
+##### 使用:
+1.在webpack.config.js中新增module对象,表示要对模块进行配置处理  
+2.在module中配置处理规则rules,规则中使用test匹配不同的模块  
+3.对参数进行配置,超过options中limit大小的文件将会交给file-loader来处理
+```
+module: {
+        rules: [
+            {
+              test:/\.(png|jpe?g|gif|svg)(\?.*)?$/,
+                use:[{
+                  loader:"url-loader",
+                  options:{
+                    limit:"8092",
+                    name:"img/[hash:7].[ext]"
+                    }
+                  }
+                ]
+            }
+        ]
+    }
+```
 ### 四、搭建一个基于vue框架的脚手架
 
 >搭建一个单文件的vue项目,需要使用vue-loader和vue-template-compiler
@@ -150,4 +178,57 @@ __注意__:在vue-loader v15版本更新后,不仅需要配置loader还需要引
 ```
 npm i sass-loader node-sass -D
 ```
-node-sass是一个提供将node.js绑定到
+node-sass是一套在 node.js 用 LibSass(C语言实现的sass解析器) 编译 scss 的工具,可以在本地自动编译scss.
+
+>使用postcss  
+
+**什么是postcss?**  
+开发中有的css属性并没有在所有浏览器中得到共同的规范,属于实验中的功能,这类css在不同浏览器上通常需要加上不同的前缀,比如-webkit,-moz.
+通过webpack的插件系统如 autoprefixer 插件,提供了自动帮我们加上这些前缀的功能(postcss-preset-env包含autoprefixer插件),同时插件会帮我们把高级的css语法转成兼容式的.类似于Babel将es6+转换成es5.  
+安装:
+```
+npm install postcss-loader postcss-preset-env -D
+```
+使用:  
+*1.在webpack.config.jsz中进行配置*  
+首先要使用sass-loader解析sass文件,之后使用postcss-loader进行处理,配置文件使用postcss-preset-env.
+```
+{
+test: /\.scss/,
+use:[
+  "style-loader",
+  "css-loader",
+  {
+     loader: "postcss-loader",
+     options: {
+       plugins: [require("postcss-preset-env")]
+     }
+  },
+  "sass-loader"
+  ]
+},
+```
+*2.根目录配置单独的postcss.config.js(名称自定)文件*
+```
+// postcss.config.js
+module.exports = {
+  plugins: {
+    "postcss-preset-env": {}
+  }
+};
+```
+postcss-preset-env 是否自动给 css 添加前缀以及添加什么前缀，依赖于要支持的浏览器列表。浏览器列表有以下几种配置方式：
+1. package.json 中的 browserslist 字段中配置，也是官方推荐的方式。
+2. 在 .browserslistrc 或者 browserslist 配置文件中配置
+3. 在 BROWSERSLIST 环境变量中配置  
+
+*在package.json的browserslist字段中配置*
+```
+"browserslist": [
+    "> 1%",   // 市场份额大于1%的浏览器(注意package.json中不能有注释)
+    "last 2 versions",  // 更新的最新两个版本的浏览器
+    "not ie <= 8"  // ie8以上的浏览器
+    "Firefox ESR // Firefox ESR浏览器
+    "not dead" // 两年以内有更新的浏览器
+  ]
+```

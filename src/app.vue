@@ -1,6 +1,7 @@
 <template>
     <div id="app">
         <div class="=head">
+            <img src="assets/IMG_1044.JPG"/>
             <h2>
                 App template!
             </h2>
@@ -16,9 +17,11 @@
 </script>
 
 <style lang="scss">
+    $color: lightblue;
     div{
         h2{
-            color: #ff0000;
+            color: $color;
+            transform: rotate(-10deg);
         }
     }
 </style>

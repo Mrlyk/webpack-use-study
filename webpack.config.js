@@ -24,12 +24,55 @@ module.exports = {
         rules: [
             {
                 test: /\.scss/,
-                use:["style-loader","css-loader","sass-loader"]
+                use:[
+                    "style-loader",
+                    "css-loader",
+                    {
+                        loader: "postcss-loader",
+                        options: {
+                            plugins: [require("postcss-preset-env")]
+                        }
+                    },
+                    "sass-loader"
+                ]
             },
             {
                 test: /\.vue$/,
                 loader: "vue-loader"
-            }
+            },
+            {
+                test:/\.(png|jpe?g|gif|svg)(\?.*)?$/i,
+                use:[{
+                    loader:"url-loader",
+                    options:{
+                        limit:"819",
+                        name:"img/[hash:7].[ext]"
+                    }
+                }
+                ]
+            },
+            {
+                test:/\.(png|jpe?g|gif|svg)(\?.*)?$/i,
+                use:[{
+                    loader:"file-loader",
+                    options:{
+                        outputPath:"images"
+                    }
+                }
+                ]
+            },
+            {
+                test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/i,
+                use: [
+                    {
+                        loader: "url-loader",
+                        options: {
+                            limit: "8192",
+                            name: "media/[hash:7].[ext]"
+                        }
+                    }
+                ]
+            },
         ]
     }
 }
