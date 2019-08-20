@@ -157,6 +157,7 @@ module: {
     }
 ```
 **注意:url-loader 和 file-loader处理的是url(...)或者require(...)或者import...引入的图片,src属性的地址图片不会进行处理**
+___
 ### 四、搭建一个基于vue框架的脚手架
 
 >搭建一个单文件的vue项目,需要使用vue-loader和vue-template-compiler
