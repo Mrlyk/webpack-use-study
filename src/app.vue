@@ -1,11 +1,11 @@
 <template>
     <div id="app">
-        <div class="=head">
-            <img src="assets/IMG_1044.JPG"/>
+        <div class="head">
             <h2>
                 App template!
             </h2>
         </div>
+        <router-view></router-view>
     </div>
 
 </template>
@@ -18,7 +18,10 @@
 
 <style lang="scss">
     $color: lightblue;
-    div{
+    div.head{
+        width: 100px;
+        height: 100px;
+        background: url("./assets/IMG_1044.JPG") no-repeat center/100%;
         h2{
             color: $color;
             transform: rotate(-10deg);

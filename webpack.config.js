@@ -41,28 +41,28 @@ module.exports = {
                 loader: "vue-loader"
             },
             {
-                test:/\.(png|jpe?g|gif|svg)(\?.*)?$/i,
+                test:/\.(png|jpe?g|gif|svg)$/i,
                 use:[{
                     loader:"url-loader",
                     options:{
-                        limit:"819",
+                        limit:"8192",
                         name:"img/[hash:7].[ext]"
                     }
                 }
                 ]
             },
+            // {
+            //     test:/\.(png|jpe?g|gif|svg)$/i,
+            //     use:[{
+            //         loader:"file-loader",
+            //         options:{
+            //             outputPath:"images"
+            //         }
+            //     }
+            //     ]
+            // },
             {
-                test:/\.(png|jpe?g|gif|svg)(\?.*)?$/i,
-                use:[{
-                    loader:"file-loader",
-                    options:{
-                        outputPath:"images"
-                    }
-                }
-                ]
-            },
-            {
-                test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/i,
+                test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)$/i,
                 use: [
                     {
                         loader: "url-loader",
