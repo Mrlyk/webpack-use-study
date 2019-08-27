@@ -33,7 +33,31 @@ webpack-demo
   // exp:path.resolve('/foo/bar','./baz');相当于：
    cd /foo/bar //此时当前路径为 /foo/bar
    cd ./baz //此时路径为 /foo/bar/baz
-  ```
+  // exp:path.join()则是从左到右拼接路径,而不是使用cd切换
+  ```  
+#### 3.自动构建,浏览器热更新与报错模块定位配置
+1.自动构建命令 --watch  
+>在检测到入口文件的依赖发生变化后会自动构建,实现自动构建
+```
+"build": "webpack --watch"
+```
+2.浏览器热更新
+>配置webpack-dev-server,该插件会在本地启动一个服务器来监视我们的变动
+```
+//安装
+npm i webpack-dev-server -D
+```
+**配置:**[官方文档](https://www.webpackjs.com/configuration/dev-server/)
+```
+devServer: {
+    contentBase:path.join(__dirname,"dist") //告诉服务器从哪里提供内容,只有在想要提供静态文件时才需要,比如我这里有张图片
+    host:'localhost',
+    post:6161
+    // 还有很多其他配置,如open:true,自动打开浏览器
+  },
+
+```
+
 #### 初始化配置的一些问题
 1. 引入内部js文件放在index.html的body中,放在head中的是外部js文件.内部js文件如果放在head中当加载到的时候会直接执行,
 这时document还没加载完会报错.
@@ -157,6 +181,48 @@ module: {
     }
 ```
 **注意:url-loader 和 file-loader处理的是url(...)或者require(...)或者import...引入的图片,src属性的地址图片不会进行处理**
+#### 3.Babel
+>介绍:babel是一个转码器,将ES2015+代码转为ES5代码,来实现更好的兼容性.babel6.0版本之后拆分了几个独立的包.具体如下安装.
+```
+//babel/core:babel的核心;babel/preset-env:让babel能根据当前的运行环境，自动确定需要的 plugins 和 polyfill,主要负责将代码转成 ES5 语法规则.
+//babel 编译时只编译语法，并不会编译 API 和实例方法，如：async/await、Promise 等，babel-polyfill 会把这些没有的 API 全部挂载到全局对象，也就是所谓的“垫片”(polyfill库手动实现的高阶方法).
+npm i @babel/core @babel/preset-env babel-loader -D
+npm i @babel/polyfill -S
+```
+##### 使用:
+1.在webpack.config.js中新增module对象,表示要对模块进行配置处理  
+2.匹配js文件,通常不要对node-modules中的文件进行处理  
+3.在根目录使用.babelrc(rc:run command)文件配置babel(官方推荐的方式)  
+具体配置参数可看[此文](https://juejin.im/post/5a79adeef265da4e93116430)
+
+```
+module: {
+        rules: [
+            {
+               test: /\.js/,
+               loader: "babel-loader",
+               exclude: /node-modules/
+            },
+        ]
+    }
+    
+/* .babelrc */
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "modules": false,
+        "targets": {
+          "browsers": ["> 1%", "last 2 versions", "not ie <= 8"]
+        },
+        "corejs": "2.6.9",
+        "useBuiltIns": "usage"
+      }
+    ]
+  ]
+}
+```
 ### 四、搭建一个基于vue框架的脚手架
 
 >搭建一个单文件的vue项目,需要使用vue-loader和vue-template-compiler
