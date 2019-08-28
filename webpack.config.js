@@ -2,8 +2,11 @@
 const path = require("path") //引入path模块,path模块是用来处理路径的一个小工具
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const VueLoaderPlugin = require("vue-loader/lib/plugin")
+const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin")
 
 module.exports = {
+  //开发模式
+  mode:'development',
   //入口文件
   entry: {
     app: "./src/app.js"
@@ -18,13 +21,26 @@ module.exports = {
       template: "./public/index.html",
       title: "零开始的vue脚手架"
     }),
-    new VueLoaderPlugin()
+    new VueLoaderPlugin(),
+    new FriendlyErrorsWebpackPlugin({
+      compilationSuccessInfo:{
+        messages: ['Your application is running here: http://localhost:6161']
+      }
+    })
   ],
+  devtool: "eval-source-map",
   devServer: {
     contentBase:path.join(__dirname,"dist"),
     host:'localhost',
     port:'6161',
-    hot:true
+    clientLogLevel:"warning",
+    hot:true,
+    quiet:true,
+    compress:true,
+    overlay:{warnings:false,errors:true}
+  },
+  watchOptions: {
+    ignored:"/node-modules/"
   },
   module: {
     rules: [

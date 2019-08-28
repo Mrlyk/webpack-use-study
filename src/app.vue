@@ -5,7 +5,8 @@
                 App template!
             </h2>
         </div>
-        <p>还在更新吗????</p>
+        <p style="color: blue">热更新了</p>
+        <input/>
         <button @click="$router.push('/hello')">To Hello</button>
         <button @click="$router.push('/about')">To About</button>
         <router-view></router-view>

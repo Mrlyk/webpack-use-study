@@ -35,14 +35,17 @@ webpack-demo
    cd ./baz //此时路径为 /foo/bar/baz
   // exp:path.join()则是从左到右拼接路径,而不是使用cd切换
   ```  
-#### 3.自动构建,浏览器热更新与报错模块定位配置
-1.自动构建命令 --watch  
+entry : 入口文件地址  
+output: 打包后的输出地址  
+mode : 开发模式 (development,production,none)
+#### 4.自动构建,浏览器实时刷新,模块热更新与报错模块定位配置
+(1)自动构建命令 --watch  
 >在检测到入口文件的依赖发生变化后会自动构建,实现自动构建
 ```
 "build": "webpack --watch"
 ```
-2.浏览器热更新
->配置webpack-dev-server,该插件会在本地启动一个服务器来监视我们的变动
+(2)浏览器实时刷新
+>配置webpack-dev-server,该插件会在本地启动一个服务器来监视我们的变动,同时默认开启watch模式
 ```
 //安装
 npm i webpack-dev-server -D
@@ -53,16 +56,104 @@ devServer: {
     contentBase:path.join(__dirname,"dist") //告诉服务器从哪里提供内容,只有在想要提供静态文件时才需要,比如我这里有张图片
     host:'localhost',
     post:6161
-    // 还有很多其他配置,如open:true,自动打开浏览器
+    // 还有很多其他配置,如open:true,自动打开浏览器;
+    // clientLogLevel:"warning",浏览器控制台输出信息显示;
+    // quiet:true,不在开发工具中打印打包信息;
+    // overlay: true,在编译出现错误时,错误信息覆盖浏览器页面
+    // inline: true,使用行内嵌入模式,在模块热更新时会将更新的chunk插入进去(还有iframe模式,产生一个虚拟的fram块,在其中实现热更新)
+    // compress: true, webpack-dev-server服务器使用gzip方式压缩所有资源,文件体积减小,但是客户端需要解压会产生额外负载.
   },
 
 ```
+(3)模块热更新  
+在devServer配置选项中增加
+```
+hot:true
+```
+则会应用模块的热更新,这样在更新一些文件时就不会对整个浏览器进行刷新,而是只更新对应模块.  
+**注意，必须有 webpack.HotModuleReplacementPlugin 才能完全启用 HMR。
+如果 webpack 或 webpack-dev-server 是通过 --hot 选项启动的，那么这个插件会被自动添加，所以你可能不需要把它添加到 webpack.config.js 中**  
+
+*配置端口代理*  
+如果希望在本地访问后端的某个服务器 api 或者访问前端自己在本地搭建的 mock 服务，可以通过 proxy 来做代理。比如：
+```
+proxy: {
+  "/api": "http://localhost:6161"
+}
+```
+最终请求 /api/json 的话会代理到 http://localhost:6161/api/json  
+
+(4)模块报错定位source-map  
+>源码在经过webpack打包之后,多个文件和模块打包到了一两个总的js文件中,如果源文件中有错误,调试工具只会告诉我们打包后的文件错误,无法定位到具体的源文件.
+此时可以配置source-map  
+
+|devtool	|构建速度	|重新构建速度	  |适用环境	|精准度|
+| --------- | --------: | :---------: | :-----: | :---: |
+|none	    |+++	    |+++	      |生产环境	|不生成 source map。|
+|source-map	|--	        |--	          |生产环境	|映射到原始源代码，source map 作为单独的文件保存。|
+|inline-source-map	|--	|--	          |开发环境	|映射到原始源代码，source map 转换为 DataUrl 后添加到 bundle 中，会导致文件大小剧增。|
+|eval	    |+++	    |+++	      |开发环境	|映射到转换后的代码，而不是源代码，行数映射不正确。|
+|eval-source-map	|--	|+	          |开发环境	|映射到原始源代码，只映射到行。|
+
+根据不同的需要我们可以在config中配置不同的方法,一般在开发中映射到源代码的行足够了,所以一般使用eval-source-map就行了  
+```
+devtool:"eval-source-map"
+```
 
 #### 初始化配置的一些问题
-1. 引入内部js文件放在index.html的body中,放在head中的是外部js文件.内部js文件如果放在head中当加载到的时候会直接执行,
-这时document还没加载完会报错.
-2. 
+1.引入内部js文件放在index.html的body中,放在head中的是外部js文件.内部js文件如果放在head中当加载到的时候会直接执行,
+这时document还没加载完会报错.  
+2.HMR(模块热更新)的前提是模块实现了HMR的接口,如果一个模块没有 HMR 处理函数,更新就会冒泡,一个单独的模块被更新,那么整组依赖模块都会被重新加载.
+诸如vue-loader,style-loader,前端三个框架的官方loader(vue-loader....等)模块内部已经实现了HMR接口.但如果我们自己写一个模块没有实现HMR接口,就会触发全局刷新.  
+举例如何实现HMR接口:  
+```
+// 在src下新建一个print.js:
+export default function(){
+  console.log('hot reloat')
+}
 
+// 在src/app.js中增加对HMR的接口实现:
+import print from "./print.js"  // 引入print.js
+print()
+// 增加对HMR的实现
+if(module.hot) {  // module是node暴露的一个全局接口
+  module.hot.accept('./print.js',function(){
+    console.log("接受热更新后的模块")
+    pirnt() // 执行热更新之后的方法
+  })
+}
+```
+*注意:手写的这种热更新虽然会更新方法,但是如果绑定了元素事件,他们依然会绑定老的方法,需要手动重新渲染元素并重新挂载到新的方法上,就需要在函数中做更多.*  
+
+3.webpack-dev-server是基于webpack-dev-middleware和express来实现的.webpack-dev-middleware 可以把 Webpack 处理后的文件传递给一个服务器(本地服务器express).
+如果想要配置更多自定义选项,可以使用webpack-dev-middleware来取代webpack-dev-server.
+[官方文档](https://webpack.docschina.org/guides/development/)  
+*基础配置如下:*
+```
+// 安装express和webpack-dev-middleware
+npm i express webpack-dev-middleware -D
+ 
+// 在根目录添加server.js
+const webpack = require("webpack");
+const middleware = require("webpack-dev-middleware");
+const config = require("./webpack.config");
+const compiler = webpack(config);
+const express = require("express");
+const app = express();
+
+app.use(
+  middleware(compiler, {
+    publicPath: config.output.publicPath  //记得在webpack.config中配置publicPath
+  })
+);
+
+app.listen(6161, () => console.log("Example app listening on port 6161!"));
+
+// 命令配置
+"scripts": {
+    "start": "node server.js"
+  },
+```
 ___
 ### 二、常用插件plugins
 >插件用于扩展webpack自身的功能,使用插件让我们能够干预webpack的构建过程,达到自定义的目的
@@ -83,7 +174,7 @@ npm install html-webpack-plugin -D
 ```
 
 ##### 使用:
-1.在webpack配置文件中先实例化
+1.在webpack配置文件中先引入
 ```
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 ```
@@ -105,6 +196,26 @@ plugins:[
     })
     ]
 ```
+#### 2.FriendlyErrorsWebpackPlugin  
+>介绍:webpack打包后会输出很多信息,该插件可以帮助我们更好的处理编译后的信息,比如错误或警告出现的具体位置会被输出到开发工具控制台.也可以自定义编译成功的输出信息.
+```
+// 安装
+npm i friendly-errors-webpack-plugin -D
+```
+##### 使用:  
+1.在webpack中先引入
+```
+const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin")
+```
+2.在配置插件的数组中new一个该实例并配置参数[插件官方文档](https://www.npmjs.com/package/friendly-errors-webpack-plugin)
+```
+new FriendlyErrorsWebpackPlugin({
+      compilationSuccessInfo:{
+        messages: ['Your application is running here: http://localhost:6161']
+      }
+    })
+```
+
 ---
 ### 三、loader及常用的一些loader
 >webpack本身只能对js和json文件进行处理,为了对css,静态资源等文件进行处理,需要使用loader
