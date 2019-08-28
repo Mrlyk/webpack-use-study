@@ -334,6 +334,7 @@ module: {
   ]
 }
 ```
+---
 ### 四、搭建一个基于vue框架的脚手架
 
 >搭建一个单文件的vue项目,需要使用vue-loader和vue-template-compiler
@@ -418,4 +419,32 @@ vue单页应用需要借助官方的vue-router来实现页面的加载和跳转
 安装:
 ```
 npm i vue-router
+```
+在src目录新建router/index.js来对router进行配置,再在入口文件中进行引人
+```
+import router from "./router/index.js"
+
+new Vue({
+    el:'#app',
+    router,
+    render: h => h(App) //vue的render函数,该渲染函数接收一个 createElement(h) 方法作为第一个参数用来创建 VNode
+})
+
+```
+---
+### 五、搭建一个mock-server服务器来mock数据  
+>实现大致分为三步:Node服务,路由,数据模拟.
+#### 1.搭建mock服务器,使用node.js + express框架来编写
+在根目录新建mock文件夹,配置server.js
+```
+// 安装express框架
+npm i express -D
+
+// 安装处理上传文件的模块
+npm i connect-multiparty -D
+```
+配置详情查看/mock/server.js文件
+```
+// 启动命令
+"mock": "node ./mock/server.js"
 ```

@@ -37,7 +37,10 @@ module.exports = {
     hot:true,
     quiet:true,
     compress:true,
-    overlay:{warnings:false,errors:true}
+    overlay:{warnings:false,errors:true},
+    proxy:{
+      "/api":"http://localhsot:9999"
+    }
   },
   watchOptions: {
     ignored:"/node-modules/"

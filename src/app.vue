@@ -15,9 +15,17 @@
 </template>
 
 <script>
-  export default {
-    name: "App"
-  }
+    import axios from "axios"
+    import api from "../mock/api"
+    export default {
+      name: "App",
+      mounted(){
+        axios.get(api.getUserInfo)
+          .then((res)=>{
+            console.log(res)
+          })
+      }
+    }
 </script>
 
 <style lang="scss">
