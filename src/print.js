@@ -1,3 +1,3 @@
 export default function () {
-  console.log("热更新?")
+  console.log('热更新?')
 }

@@ -99,7 +99,6 @@ proxy: {
 ```
 devtool:"eval-source-map"
 ```
-
 #### 初始化配置的一些问题
 1.引入内部js文件放在index.html的body中,放在head中的是外部js文件.内部js文件如果放在head中当加载到的时候会直接执行,
 这时document还没加载完会报错.  
@@ -447,4 +446,67 @@ npm i connect-multiparty -D
 ```
 // 启动命令
 "mock": "node ./mock/server.js"
+```
+
+### 六、配置代码检查工具Eslint,Stylelint  
+#### 1.Eslint[官方文档](https://cn.eslint.org/docs/user-guide/getting-started)  
+>介绍:功能强大的js代码检查工具,有强大的定制化功能
+
+```
+//安装
+npm i eslint eslint-loader eslint-plugin-vue babel-eslint eslint-friendly-formatter -D
+```
+- eslint-loader:在webpack编译之前对源代码进行检查
+- eslint-plugin-vue:对.vue文件中的指令,js进行规范,是vue团队开发的
+- babel-eslint:对未标准化的语法进行规范
+- eslint-friendly-formatter:对不符合规范的代码警告进行优化,让开发者更容易读懂
+
+>配置  
+
+在webpack.config.js中进行配置预处理loader
+```
+{
+  test: /\.(js|vue)$/,
+  loader:"eslint-loader",
+  enforce: "pre",  // 确保eslint校验的是未经其他loader处理过的源码
+  options:{
+    formatter:require("eslint-friendly-formatter")
+  }
+},
+```
+ESLint 支持多种格式的配置文件:  
+- JavaScript - 使用 .eslintrc.js 然后输出一个配置对象(推荐)
+- YAML - 使用 .eslintrc.yaml 或 .eslintrc.yml 去定义配置的结构。
+- JSON - 使用 .eslintrc.json 去定义配置的结构，ESLint 的 JSON 文件允许 JavaScript 风格的注释。
+- package.json - 在 package.json 里创建一个 eslintConfig 属性，在那里定义你的配置。
+
+在根目录创建.eslintrc.js(注意是js),通常配置如下:  
+ps:6.0以上版本的eslint在2019.1.3版本之前Jetbrains开发工具上会报错但仍能正常使用  
+```
+module.exports = {
+  env:{  //env 指定运行环境
+    browser:true,
+    node:true,
+    es6:true
+  },
+  //extends 指定特定的检查规则,这里是两个推荐的规则集
+  extends:["eslint:recommended","plugin:vue/essential"],
+  //eslint默认使用Espree解析器,因为项目中会用到未规范的语言特性,所以指定使用babel-eslint进行解析.
+  //因为模块使用的是es6的模块,所以将sourceType指定为module,默认为script
+  parserOptions:{
+    parser:"babel-eslint",
+    sourceType:"module"
+  },
+  //使用安装的eslint-plugin-vue插件,可以省略 eslint-plugin- 只声明 vue 就行
+  plugins:["vue"],
+
+  //可自定义规则
+  rules:{}
+}
+
+/**
+ * 注意:在配置中也可以直接指定parser:"babel-eslint",或其他解析器.但是会覆盖掉下面插件自带的解析器.
+ * 比如eslint-plugin-vue中自带解析器vue-eslint-parser,会被babel-eslint覆盖掉.
+ * 而在parseOptions中进行配置则不会
+*/
 ```

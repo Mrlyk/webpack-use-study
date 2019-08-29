@@ -1,9 +1,9 @@
 module.exports = {
   code: 0,
-  message: "success",
+  message: 'success',
   data: {
-    name: "lyk",
-    mobile: "178xxxxx9999",
-    age: "18"
+    name: 'lyk',
+    mobile: '178xxxxx9999',
+    age: '18'
   }
 }
