@@ -10,5 +10,7 @@ module.exports = {
     sourceType:"module"
   },
   plugins:["vue"],
-  rules:{}
+  rules:{
+    indent:["warn",2]
+  }
 }

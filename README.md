@@ -500,8 +500,11 @@ module.exports = {
   //使用安装的eslint-plugin-vue插件,可以省略 eslint-plugin- 只声明 vue 就行
   plugins:["vue"],
 
-  //可自定义规则
-  rules:{}
+  //可自定义规则 0:off 1:warn 2:error
+  //每一条规则除了接受字符串外，还可以接受一个数组，数组的第一项用来指定警告的级别，默认警告级别是 error
+  rules:{
+    indent:["warn",2]
+  }
 }
 
 /**
@@ -510,3 +513,25 @@ module.exports = {
  * 而在parseOptions中进行配置则不会
 */
 ```
+>局部禁用规则  
+
+有时我们需要在某些地方禁用一些eslint检查,比如实现一些特殊方法的时候,可以使用eslint的特殊注释:  
+```
+// 块代码禁用
+/* eslint-disable */     //下方的代码都会禁用代码检查
+   Your Code
+   xxxxx
+/* eslint-enable */
+
+//行代码禁用
+Your code   // eslint-disable-line (可以在后面注明为什么禁用如 no-console)
+```
+
+---
+### 其他一些知识  
+#### 1.module.exports和exports的区别(都是es5的语法,es6是export不是exports) 
+*commonJS是一种规范,nodejs是这种规范的实现*   
+*commonJS规范-规定module代表当前模块对象,module.exports就是module提供的对外接口,exports是node提供的一种简单写法*  
+*module.exports 和 exports 是node.js内置的两个对象,默认两个都指向同一个空的对象 {}*  
+*使用require进行引入的时候实际上引入的是module.exports的对象,而当他们指向了不同的内存地址时,那么require进来的就是module.exports的对象*,
+*exports的内容就会失败*
